@@ -1,0 +1,14 @@
+{
+  "accuracy": 0.7629524485450674,
+  "precision": 0.53584229390681,
+  "recall": 0.7994652406417112,
+  "f1": 0.6416309012875536,
+  "roc_auc": 0.8526892970626985,
+  "test_size": 1409,
+  "train_size": 5634,
+  "threshold": 0.5,
+  "random_state": 123,
+  "class_weight": "balanced",
+  "cobertura_receita_churn": 0.827830329312915,
+  "clientes_sinalizados": 558
+}

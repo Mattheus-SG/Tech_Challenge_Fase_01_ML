@@ -1,0 +1,48 @@
+{
+  "seed": 123,
+  "test_size": 0.2,
+  "estratificacao": true,
+  "limiar": 0.5,
+  "features": [
+    "Tenure Months",
+    "Monthly Charges",
+    "Total Charges",
+    "Partner",
+    "Dependents",
+    "Phone Service",
+    "Multiple Lines",
+    "Internet Service",
+    "Online Security",
+    "Online Backup",
+    "Device Protection",
+    "Tech Support",
+    "Streaming TV",
+    "Streaming Movies",
+    "Contract",
+    "Paperless Billing",
+    "Payment Method"
+  ],
+  "numericas": [
+    "Tenure Months",
+    "Monthly Charges",
+    "Total Charges"
+  ],
+  "categoricas": [
+    "Partner",
+    "Dependents",
+    "Phone Service",
+    "Multiple Lines",
+    "Internet Service",
+    "Online Security",
+    "Online Backup",
+    "Device Protection",
+    "Tech Support",
+    "Streaming TV",
+    "Streaming Movies",
+    "Contract",
+    "Paperless Billing",
+    "Payment Method"
+  ],
+  "modelo": "Regressão Logística",
+  "fonte": "CSV recebido: IBM_Telco_customer_churn_IBM_dataset.csv"
+}
