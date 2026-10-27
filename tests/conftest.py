@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from src.config import DATA_PATH
+from src.predict import carregar_modelo
 from src.preprocessing import carregar_dados, preparar_dados, separar_features_alvo
 
 # Um cliente no formato original do CSV (33 colunas)
@@ -68,3 +69,62 @@ def df_bruto() -> pd.DataFrame:
 def dados_reais() -> tuple[pd.DataFrame, pd.Series]:
     """X e y do dataset real, já preparados (carregados uma vez por execução)."""
     return separar_features_alvo(preparar_dados(carregar_dados(DATA_PATH)))
+
+
+# Clientes no formato de entrada do modelo (o mesmo que a API vai receber)
+CLIENTE_ALTO_RISCO = {
+    "gender": "Female",
+    "SeniorCitizen": 0,
+    "Partner": "No",
+    "Dependents": "No",
+    "tenure": 2,
+    "PhoneService": "Yes",
+    "MultipleLines": "No",
+    "InternetService": "Fiber optic",
+    "OnlineSecurity": "No",
+    "OnlineBackup": "No",
+    "DeviceProtection": "No",
+    "TechSupport": "No",
+    "StreamingTV": "No",
+    "StreamingMovies": "No",
+    "Contract": "Month-to-month",
+    "PaperlessBilling": "Yes",
+    "PaymentMethod": "Electronic check",
+    "MonthlyCharges": 70.7,
+    "TotalCharges": 151.65,
+}
+
+CLIENTE_FIEL = {
+    **CLIENTE_ALTO_RISCO,
+    "Partner": "Yes",
+    "Dependents": "Yes",
+    "tenure": 60,
+    "InternetService": "DSL",
+    "OnlineSecurity": "Yes",
+    "OnlineBackup": "Yes",
+    "DeviceProtection": "Yes",
+    "TechSupport": "Yes",
+    "Contract": "Two year",
+    "PaperlessBilling": "No",
+    "PaymentMethod": "Credit card (automatic)",
+    "MonthlyCharges": 65.0,
+    "TotalCharges": 3900.0,
+}
+
+
+@pytest.fixture
+def cliente() -> dict:
+    """Cópia do cliente de alto risco (cada teste pode alterá-la à vontade)."""
+    return dict(CLIENTE_ALTO_RISCO)
+
+
+@pytest.fixture
+def cliente_fiel() -> dict:
+    """Cópia de um cliente de perfil fiel (contrato longo, serviços de suporte)."""
+    return dict(CLIENTE_FIEL)
+
+
+@pytest.fixture(scope="session")
+def modelo():
+    """Modelo oficial da Etapa 2, carregado uma vez por execução."""
+    return carregar_modelo()
