@@ -18,6 +18,22 @@ DATA_PATH = RAIZ / "data" / "IBM_Telco_customer_churn_IBM_dataset.csv"
 MODELS_DIR = RAIZ / "models"
 MODEL_PATH = Path(os.getenv("MODEL_PATH", MODELS_DIR / "02_modelo_campeao.joblib"))
 
+
+def caminho_metadata(caminho_modelo: Path) -> Path:
+    """Os metadados ficam ao lado do modelo: modelo.joblib -> modelo_metadata.json."""
+    return caminho_modelo.with_name(f"{caminho_modelo.stem}_metadata.json")
+
+
+# ----- Modelo campeão (melhores hiperparâmetros do GridSearchCV da Etapa 2) -----
+NOME_MODELO = "Random Forest (Tuning + KBest)"
+K_FEATURES = "all"
+RF_PARAMS = {
+    "n_estimators": 200,
+    "max_depth": 10,
+    "min_samples_split": 2,
+    "class_weight": "balanced",
+}
+
 # ----- Colunas -----
 TARGET = "Churn"
 
