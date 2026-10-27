@@ -3,6 +3,9 @@
 import pandas as pd
 import pytest
 
+from src.config import DATA_PATH
+from src.preprocessing import carregar_dados, preparar_dados, separar_features_alvo
+
 # Um cliente no formato original do CSV (33 colunas)
 CLIENTE_BRUTO = {
     "CustomerID": "0001-AAAAA",
@@ -59,3 +62,9 @@ def df_bruto() -> pd.DataFrame:
         "Contract": " Two year ",
     }
     return pd.DataFrame([CLIENTE_BRUTO, senior, novo])
+
+
+@pytest.fixture(scope="session")
+def dados_reais() -> tuple[pd.DataFrame, pd.Series]:
+    """X e y do dataset real, já preparados (carregados uma vez por execução)."""
+    return separar_features_alvo(preparar_dados(carregar_dados(DATA_PATH)))
