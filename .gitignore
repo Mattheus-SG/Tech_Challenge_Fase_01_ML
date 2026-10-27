@@ -18,3 +18,6 @@ __pycache__/
 # Testes / cobertura
 .coverage
 htmlcov/
+
+# Modelos gerados por src/train.py (o oficial é models/02_modelo_campeao.joblib)
+models/modelo_retreinado*
