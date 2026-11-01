@@ -65,7 +65,7 @@ Mesma divisão, mesma validação cruzada, limiar 0,5. A escolha usou as colunas
 
 Precision, recall e acurácia são da classe churn / do conjunto de teste.
 
-**Como ler a tabela.** Os três modelos têm AUC praticamente igual, ou seja, ordenam os clientes com qualidade equivalente. A vantagem do Random Forest está no perfil de erro: ele encontra mais cancelamentos (recall 0,78 contra 0,57 do baseline) e, em troca, erra mais ao sinalizar (precision 0,54 contra 0,64). Esse efeito vem em boa parte do `class_weight="balanced"`. O ganho de F1 na CV sobre o baseline (+0,029) é menor que dois desvios-padrão entre folds.
+**Como ler a tabela.** Todos os modelos têm AUC praticamente igual, ou seja, ordenam os clientes com qualidade equivalente. A vantagem do Random Forest está no perfil de erro: ele encontra mais cancelamentos (recall 0,78 contra 0,57 do baseline) e, em troca, erra mais ao sinalizar (precision 0,54 contra 0,64). Esse efeito vem em boa parte do `class_weight="balanced"`. O ganho de F1 na CV sobre o baseline (+0,029) é menor que dois desvios-padrão entre folds.
 
 **Comparação com os mesmos pesos.** A linha "Regressão Logística balanceada" usa o mesmo `class_weight` do campeão, a mesma divisão e os mesmos folds. Com ela, a vantagem do Random Forest cai para +0,009 de F1 na CV (menos de um desvio-padrão) e +0,020 no teste, onde os dois têm o mesmo recall e o Random Forest gera 29 alarmes falsos a menos (248 contra 277). A escolha do campeão se mantém, mas não há diferença grande entre os modelos.
 
