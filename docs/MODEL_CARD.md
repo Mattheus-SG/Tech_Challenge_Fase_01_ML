@@ -1,4 +1,4 @@
-# Model Card —  Predição de Churn de Clientes (Telco)
+# Model Card — Predição de Churn de Clientes (Telco)
 
 ## 1. Detalhes do modelo
 
@@ -6,7 +6,9 @@
 |---|---|
 | **Modelo** | Random Forest Classifier (Scikit-Learn / Tuning + KBest), campeão da Etapa 2 |
 | **Tarefa** | Classificação binária: churn (1) ou permanência (0) |
-| **Arquivos** | `models/02_modelo_campeao.joblib` e `models/02_modelo_campeao_metadata.json` |
+| **Autores** | Grupo 28 (12MLET, POSTECH) |
+| **Versão** | `2026-10-25T19:49:55`, a mesma informada pela API em `versao_modelo` |
+| **Arquivos** | `models/02_modelo_campeao.joblib`, `models/02_modelo_campeao_metadata.json` e `models/02_avaliacao_campeao.json` |
 | **Reprodutibilidade** | Seed 42, divisão treino/teste 80/20 estratificada, validação cruzada estratificada com 5 folds |
 
 **Arquitetura.** Um único `Pipeline` do scikit-learn, para que o treino e a API usem exatamente o mesmo pré-processamento:
@@ -114,7 +116,7 @@ O modelo usa `gender`, `SeniorCitizen`, `Partner` e `Dependents`. Abaixo, o dese
 - **Variáveis podem funcionar como proxy.** Retirar `gender` ou `SeniorCitizen` não elimina o problema, porque `Partner`, `Dependents`, `PaymentMethod` e `tenure` se correlacionam com características pessoais.
 - **Não foi possível avaliar** vieses ligados a raça, etnia ou renda, porque o dataset não traz essas informações. A ausência de evidência aqui não significa ausência de viés.
 
-**Cuidado ao interpretar:** os números vêm de um único conjunto de teste, sem intervalos de confiança. Os grupos pequenos são instáveis: há cerca de 27 clientes que cancelaram entre os 326 com dependentes e cerca de 35 entre os 450 com mais de 48 meses de tenure.
+**Cuidado ao interpretar:** os números vêm de um único conjunto de teste, sem intervalos de confiança. Os grupos pequenos são instáveis: há 27 clientes que cancelaram entre os 326 com dependentes e 35 entre os 450 com mais de 48 meses de tenure.
 
 ## 6. Limitações
 
@@ -123,5 +125,5 @@ O modelo usa `gender`, `SeniorCitizen`, `Partner` e `Dependents`. Abaixo, o dese
 - **Calibração das probabilidades:** as pontuações de risco produzidas pelo modelo não devem ser interpretadas diretamente como probabilidades reais de cancelamento sem uma avaliação de calibração. Sua finalidade é auxiliar na identificação de clientes com maior propensão ao cancelamento.
 - **Precisão do modelo:** o desempenho na identificação de clientes propensos ao cancelamento deve ser avaliado considerando métricas como precisão, recall e F1-score. A escolha do modelo deve levar em conta o equilíbrio entre identificar clientes em risco e evitar classificações incorretas.
 - **Sem causalidade:** o modelo prevê quem tende a cancelar, mas não diz o que faria o cliente ficar. O efeito de uma ação de retenção exige um experimento próprio.
-- **Sem monitoramento em produção:** não há detecção de drift nem retreino automático. O re-treino manual está em `src/train.py`.
+- **Sem monitoramento em produção:** não há detecção de drift nem retreino automático. O retreino manual está em `src/train.py`.
 - **Versões:** o arquivo `.joblib` foi gerado com scikit-learn 1.9.0 e deve ser carregado com a mesma versão. Como o formato é baseado em pickle, só carregue arquivos de origem confiável.
