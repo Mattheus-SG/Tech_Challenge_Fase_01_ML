@@ -17,6 +17,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 DATA_PATH = RAIZ / "data" / "IBM_Telco_customer_churn_IBM_dataset.csv"
 MODELS_DIR = RAIZ / "models"
 MODEL_PATH = Path(os.getenv("MODEL_PATH", MODELS_DIR / "02_modelo_campeao.joblib"))
+AVALIACAO_PATH = MODELS_DIR / "02_avaliacao_campeao.json"
 
 
 def caminho_metadata(caminho_modelo: Path) -> Path:

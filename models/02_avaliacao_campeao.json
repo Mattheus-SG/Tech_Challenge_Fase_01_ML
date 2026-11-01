@@ -1,0 +1,122 @@
+{
+  "limiar_decisao": 0.5,
+  "matriz_confusao_teste": {
+    "tn": 787,
+    "fp": 248,
+    "fn": 83,
+    "tp": 291
+  },
+  "metrica_negocio": {
+    "cobertura_cobranca_churn": 0.8050773657077556,
+    "clientes_sinalizados": 539,
+    "clientes_no_teste": 1409
+  },
+  "baseline_balanceado": {
+    "cv_f1_media": 0.6398541267586744,
+    "cv_f1_std": 0.021936010988622776,
+    "cv_roc_auc_media": 0.8588361333346853,
+    "cv_roc_auc_std": 0.012555896608392588,
+    "cv_precision_media": 0.5290733935151846,
+    "cv_precision_std": 0.01939677877092674,
+    "cv_recall_media": 0.8100334448160537,
+    "cv_recall_std": 0.034846866294665144,
+    "teste_f1": 0.6178343949044586,
+    "teste_roc_auc": 0.8489317729726936,
+    "teste_precision": 0.5123239436619719,
+    "teste_recall": 0.7780748663101604,
+    "teste_accuracy": 0.7444996451383961,
+    "alarmes_falsos_teste": 277
+  },
+  "grupos": {
+    "Mulheres": {
+      "n": 687,
+      "churn_real": 0.28093158660844253,
+      "churners": 193,
+      "sinalizados": 0.37554585152838427,
+      "recall": 0.7461139896373057,
+      "precision": 0.5581395348837209,
+      "alarmes_falsos": 0.23076923076923078,
+      "auc": 0.8495626271737534
+    },
+    "Homens": {
+      "n": 722,
+      "churn_real": 0.25069252077562326,
+      "churners": 181,
+      "sinalizados": 0.389196675900277,
+      "recall": 0.8121546961325967,
+      "precision": 0.5231316725978647,
+      "alarmes_falsos": 0.2476894639556377,
+      "auc": 0.8547247270759082
+    },
+    "Menos de 65 anos": {
+      "n": 1187,
+      "churn_real": 0.2325189553496209,
+      "churners": 276,
+      "sinalizados": 0.33192923336141533,
+      "recall": 0.7355072463768116,
+      "precision": 0.5152284263959391,
+      "alarmes_falsos": 0.20965971459934138,
+      "auc": 0.855197744157559
+    },
+    "65 anos ou mais": {
+      "n": 222,
+      "churn_real": 0.44144144144144143,
+      "churners": 98,
+      "sinalizados": 0.6531531531531531,
+      "recall": 0.8979591836734694,
+      "precision": 0.6068965517241379,
+      "alarmes_falsos": 0.4596774193548387,
+      "auc": 0.7799539170506913
+    },
+    "Sem parceiro(a)": {
+      "n": 736,
+      "churn_real": 0.33695652173913043,
+      "churners": 248,
+      "sinalizados": 0.5108695652173914,
+      "recall": 0.8266129032258065,
+      "precision": 0.5452127659574468,
+      "alarmes_falsos": 0.35040983606557374,
+      "auc": 0.8195605830248547
+    },
+    "Com parceiro(a)": {
+      "n": 673,
+      "churn_real": 0.18722139673105498,
+      "churners": 126,
+      "sinalizados": 0.24219910846953938,
+      "recall": 0.6825396825396826,
+      "precision": 0.5276073619631901,
+      "alarmes_falsos": 0.14076782449725778,
+      "auc": 0.8735527117611213
+    },
+    "Sem dependentes": {
+      "n": 1083,
+      "churn_real": 0.3204062788550323,
+      "churners": 347,
+      "sinalizados": 0.47368421052631576,
+      "recall": 0.8097982708933718,
+      "precision": 0.5477582846003899,
+      "alarmes_falsos": 0.31521739130434784,
+      "auc": 0.8249494894123544
+    },
+    "Com dependentes": {
+      "n": 326,
+      "churn_real": 0.08282208588957055,
+      "churners": 27,
+      "sinalizados": 0.07975460122699386,
+      "recall": 0.37037037037037035,
+      "precision": 0.38461538461538464,
+      "alarmes_falsos": 0.05351170568561873,
+      "auc": 0.8877740616871052
+    },
+    "Tenure acima de 48 meses": {
+      "n": 450,
+      "churn_real": 0.07777777777777778,
+      "churners": 35,
+      "sinalizados": 0.09111111111111111,
+      "recall": 0.37142857142857144,
+      "precision": 0.3170731707317073,
+      "alarmes_falsos": 0.06746987951807229,
+      "auc": 0.8497762478485371
+    }
+  }
+}

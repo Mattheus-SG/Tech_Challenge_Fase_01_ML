@@ -71,8 +71,10 @@ class Cliente(BaseModel):
         "Electronic check",
         "Mailed check",
     ] = Field(description="Forma de pagamento")
-    MonthlyCharges: float = Field(ge=0, description="Valor da mensalidade (US$)")
-    TotalCharges: float = Field(ge=0, description="Total já cobrado (US$)")
+    MonthlyCharges: float = Field(
+        ge=0, allow_inf_nan=False, description="Valor da mensalidade (US$)"
+    )
+    TotalCharges: float = Field(ge=0, allow_inf_nan=False, description="Total já cobrado (US$)")
 
     @model_validator(mode="after")
     def validar_combinacoes_de_servicos(self) -> Self:
