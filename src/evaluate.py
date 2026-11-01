@@ -92,6 +92,13 @@ def avaliar(caminho_dados: Path = DATA_PATH, seed: int = SEED) -> dict:
     metricas_baseline |= avaliar_no_teste(baseline, X_test, y_test)
     fp_baseline = int(((baseline.predict(X_test) == 1) & (y_test.to_numpy() == 0)).sum())
 
+    grupos = {}
+    for nome, filtro in GRUPOS.items():
+        mascara = filtro(X_test).to_numpy()
+        grupos[nome] = desempenho_do_grupo(
+            y_test.to_numpy()[mascara], pred[mascara], proba[mascara]
+        )
+
     return {
         "limiar_decisao": LIMIAR_DECISAO,
         "matriz_confusao_teste": {"tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp)},
@@ -101,11 +108,7 @@ def avaliar(caminho_dados: Path = DATA_PATH, seed: int = SEED) -> dict:
             "clientes_no_teste": int(len(y_test)),
         },
         "baseline_balanceado": {**metricas_baseline, "alarmes_falsos_teste": fp_baseline},
-        "grupos": {
-            nome: desempenho_do_grupo(y_test.to_numpy()[mascara], pred[mascara], proba[mascara])
-            for nome, filtro in GRUPOS.items()
-            for mascara in [filtro(X_test).to_numpy()]
-        },
+        "grupos": grupos,
     }
 
 
