@@ -14,7 +14,9 @@ from functools import lru_cache
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
-from fastapi.responses import RedirectResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from src.api.schemas import Cliente, Predicao, Saude
 from src.config import LIMIAR_DECISAO, MODEL_PATH, caminho_metadata
@@ -75,6 +77,13 @@ app = FastAPI(
     version=VERSAO_API,
     lifespan=lifespan,
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def erro_de_validacao(request: Request, erro: RequestValidationError) -> JSONResponse:
+    """Responde 422 sem repetir o valor recebido: é dado do cliente e pode não caber em JSON."""
+    detalhes = [{k: v for k, v in e.items() if k not in ("input", "ctx")} for e in erro.errors()]
+    return JSONResponse(status_code=422, content={"detail": jsonable_encoder(detalhes)})
 
 
 @app.middleware("http")
