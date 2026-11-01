@@ -1,0 +1,51 @@
+Log de experimentos - Etapa 2 (2026-10-25T19:49:55)
+Seed=42 | CV=5 folds estratificados | Teste=20% | Dataset=IBM_Telco_customer_churn_IBM_dataset.csv
+
+[Regressão Logística (Baseline)]
+  cv_f1_media: 0.6201
+  cv_f1_std: 0.0309
+  cv_roc_auc_media: 0.8590
+  cv_roc_auc_std: 0.0127
+  cv_precision_media: 0.6666
+  cv_precision_std: 0.0252
+  cv_recall_media: 0.5806
+  cv_recall_std: 0.0429
+  teste_f1: 0.6062
+  teste_roc_auc: 0.8490
+  teste_precision: 0.6446
+  teste_recall: 0.5722
+  teste_accuracy: 0.8027
+
+[Random Forest (Tuning + KBest)]
+  cv_f1_media: 0.6491
+  cv_f1_std: 0.0163
+  cv_roc_auc_media: 0.8589
+  cv_roc_auc_std: 0.0103
+  cv_precision_media: 0.5553
+  cv_precision_std: 0.0152
+  cv_recall_media: 0.7813
+  cv_recall_std: 0.0247
+  teste_f1: 0.6375
+  teste_roc_auc: 0.8519
+  teste_precision: 0.5399
+  teste_recall: 0.7781
+  teste_accuracy: 0.7651
+
+[Rede Neural (MLP)]
+  cv_f1_media: 0.6206
+  cv_f1_std: 0.0311
+  cv_roc_auc_media: 0.8593
+  cv_roc_auc_std: 0.0119
+  cv_precision_media: 0.6653
+  cv_precision_std: 0.0207
+  cv_recall_media: 0.5833
+  cv_recall_std: 0.0482
+  teste_f1: 0.6141
+  teste_roc_auc: 0.8534
+  teste_precision: 0.6361
+  teste_recall: 0.5936
+  teste_accuracy: 0.8020
+
+Melhores hiperparametros RF : {'classifier__class_weight': 'balanced', 'classifier__max_depth': 10, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 200, 'feature_selection__k': 'all'}
+Melhores hiperparametros MLP: {'classifier__alpha': 0.0001, 'classifier__hidden_layer_sizes': (64, 32)}
+Campeao: Random Forest (Tuning + KBest)

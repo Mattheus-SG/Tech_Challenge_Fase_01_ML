@@ -1,0 +1,36 @@
+[project]
+name = "tech-challenge-fase-01-ml"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.162.0",
+    "joblib>=1.6.0",
+    "numpy==2.5.2",
+    "pandas==3.0.5",
+    "pydantic>=2.14.1",
+    "scikit-learn==1.9.0",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.16.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.11.2",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.3",
+    "seaborn>=0.13.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["slow: treina o modelo completo (pule com -m 'not slow')"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["notebooks"]  # experimentação; o lint vale para src/ e tests/
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

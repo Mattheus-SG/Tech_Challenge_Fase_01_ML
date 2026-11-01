@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Ambiente / SO / IDE
+.env
+.DS_Store
+.vscode/
+.idea/
+
+# Testes / cobertura
+.coverage
+htmlcov/
+
+# Modelos gerados por src/train.py (o oficial é models/02_modelo_campeao.joblib)
+models/modelo_retreinado*
