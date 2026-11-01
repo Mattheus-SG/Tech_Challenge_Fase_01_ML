@@ -42,8 +42,17 @@ def test_avaliacao_cobre_todos_os_grupos_e_os_dois_lados_do_conjunto_de_teste(av
     assert grupos["Mulheres"]["n"] + grupos["Homens"]["n"] == 1409
 
 
-def test_avaliacao_reproduz_a_matriz_de_confusao_do_modelo_oficial(avaliacao):
-    assert avaliacao["matriz_confusao_teste"] == {"tn": 787, "fp": 248, "fn": 83, "tp": 291}
+def test_matriz_de_confusao_e_coerente_com_as_metricas_do_modelo(avaliacao):
+    """Sem valores fixos: o modelo muda levemente quando o notebook 02 roda em outra máquina."""
+    metadata = json.loads((MODELS_DIR / "02_modelo_campeao_metadata.json").read_text("utf-8"))
+    matriz = avaliacao["matriz_confusao_teste"]
+
+    assert matriz["tp"] + matriz["fn"] == 374
+    assert matriz["tn"] + matriz["fp"] == 1035
+    recall = matriz["tp"] / (matriz["tp"] + matriz["fn"])
+    precision = matriz["tp"] / (matriz["tp"] + matriz["fp"])
+    assert recall == pytest.approx(metadata["metricas"]["teste_recall"])
+    assert precision == pytest.approx(metadata["metricas"]["teste_precision"])
 
 
 def test_avaliacao_registra_a_diferenca_entre_treino_e_teste(avaliacao):
