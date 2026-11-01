@@ -11,6 +11,12 @@
     "clientes_sinalizados": 539,
     "clientes_no_teste": 1409
   },
+  "treino_vs_teste": {
+    "auc_treino": 0.9463666841472864,
+    "auc_teste": 0.8518522824149424,
+    "f1_treino": 0.771750805585392,
+    "f1_teste": 0.6374589266155531
+  },
   "baseline_balanceado": {
     "cv_f1_media": 0.6398541267586744,
     "cv_f1_std": 0.021936010988622776,
