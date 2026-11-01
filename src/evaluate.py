@@ -4,7 +4,8 @@ Uso: uv run python -m src.evaluate
 
 Não treina nem altera o modelo oficial. Calcula, no mesmo conjunto de teste da Etapa 2:
 a métrica de negócio, o desempenho por subgrupo, a diferença entre treino e teste e a
-comparação com um baseline que usa o mesmo class_weight="balanced" do campeão. Salva tudo em models/02_avaliacao_campeao.json.
+comparação com um baseline que usa o mesmo class_weight="balanced" do campeão. Salva tudo em
+models/02_avaliacao_campeao.json.
 """
 
 import json
