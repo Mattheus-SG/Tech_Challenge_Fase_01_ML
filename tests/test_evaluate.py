@@ -46,6 +46,14 @@ def test_avaliacao_reproduz_a_matriz_de_confusao_do_modelo_oficial(avaliacao):
     assert avaliacao["matriz_confusao_teste"] == {"tn": 787, "fp": 248, "fn": 83, "tp": 291}
 
 
+def test_avaliacao_registra_a_diferenca_entre_treino_e_teste(avaliacao):
+    """Caracterização: o sobreajuste citado no Model Card (seção 6)."""
+    ajuste = avaliacao["treino_vs_teste"]
+
+    assert ajuste["auc_treino"] > ajuste["auc_teste"]
+    assert ajuste["f1_treino"] > ajuste["f1_teste"]
+
+
 def test_campeao_supera_o_baseline_com_os_mesmos_pesos(avaliacao):
     """Caracterização: a vantagem existe, mas é pequena (ver Model Card, seção 4.1)."""
     metadata = json.loads((MODELS_DIR / "02_modelo_campeao_metadata.json").read_text("utf-8"))
@@ -61,3 +69,4 @@ def test_arquivo_salvo_esta_atualizado(avaliacao):
 
     assert salvo["metrica_negocio"] == avaliacao["metrica_negocio"]
     assert salvo["grupos"] == avaliacao["grupos"]
+    assert salvo["treino_vs_teste"] == avaliacao["treino_vs_teste"]

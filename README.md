@@ -60,7 +60,7 @@ A análise completa, incluindo as limitações e o desempenho por grupo, está n
 │   ├── 02_resultado_treinamento.csv               # tabela comparativa dos modelos
 │   ├── 02_experimentos_gridsearch.csv             # registro das 76 combinações testadas
 │   ├── 02_log_experimentos.txt                    # log dos experimentos
-│   ├── 02_avaliacao_campeao.json                  # métrica de negócio, subgrupos e baseline balanceado
+│   ├── 02_avaliacao_campeao.json                  # métrica de negócio, subgrupos, treino x teste e baseline balanceado
 │   └── baseline_*                                 # baseline da Etapa 1 (modelo, métricas, configuração)
 ├── notebooks/                                     # experimentação (Etapas 1 e 2)
 ├── outputs/                                       # gráficos gerados pelo notebook 01
