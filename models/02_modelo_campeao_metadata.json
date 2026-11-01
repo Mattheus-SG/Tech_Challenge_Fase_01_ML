@@ -1,0 +1,131 @@
+{
+  "modelo": "Random Forest (Tuning + KBest)",
+  "criado_em": "2026-10-25T19:49:55",
+  "criterio_de_escolha": "maior F1 médio na validação cruzada (desempate: AUC-ROC)",
+  "seed": 42,
+  "cv_folds": 5,
+  "test_size": 0.2,
+  "dataset": "IBM_Telco_customer_churn_IBM_dataset.csv",
+  "n_linhas": 7043,
+  "taxa_churn": 0.2653698707936959,
+  "versoes": {
+    "python": "3.14.7",
+    "scikit-learn": "1.9.0",
+    "pandas": "3.0.5",
+    "numpy": "2.5.2"
+  },
+  "features_numericas": [
+    "SeniorCitizen",
+    "tenure",
+    "MonthlyCharges",
+    "TotalCharges"
+  ],
+  "features_categoricas": {
+    "gender": [
+      "Female",
+      "Male"
+    ],
+    "Partner": [
+      "No",
+      "Yes"
+    ],
+    "Dependents": [
+      "No",
+      "Yes"
+    ],
+    "PhoneService": [
+      "No",
+      "Yes"
+    ],
+    "MultipleLines": [
+      "No",
+      "No phone service",
+      "Yes"
+    ],
+    "InternetService": [
+      "DSL",
+      "Fiber optic",
+      "No"
+    ],
+    "OnlineSecurity": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "OnlineBackup": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "DeviceProtection": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "TechSupport": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "StreamingTV": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "StreamingMovies": [
+      "No",
+      "No internet service",
+      "Yes"
+    ],
+    "Contract": [
+      "Month-to-month",
+      "One year",
+      "Two year"
+    ],
+    "PaperlessBilling": [
+      "No",
+      "Yes"
+    ],
+    "PaymentMethod": [
+      "Bank transfer (automatic)",
+      "Credit card (automatic)",
+      "Electronic check",
+      "Mailed check"
+    ]
+  },
+  "colunas_descartadas": {
+    "vazamento (leakage)": [
+      "Churn Label",
+      "Churn Score",
+      "CLTV",
+      "Churn Reason"
+    ],
+    "constantes": [
+      "Count",
+      "Country",
+      "State"
+    ],
+    "geografia": [
+      "City",
+      "Zip Code",
+      "Lat Long",
+      "Latitude",
+      "Longitude"
+    ]
+  },
+  "metricas": {
+    "cv_f1_media": 0.6490535941711404,
+    "cv_f1_std": 0.016315759946103608,
+    "cv_roc_auc_media": 0.8589400553215146,
+    "cv_roc_auc_std": 0.010253400613872622,
+    "cv_precision_media": 0.5553320072468286,
+    "cv_precision_std": 0.015237159994445262,
+    "cv_recall_media": 0.7812709030100334,
+    "cv_recall_std": 0.024722031588730896,
+    "teste_f1": 0.6374589266155531,
+    "teste_roc_auc": 0.8518522824149424,
+    "teste_precision": 0.5398886827458256,
+    "teste_recall": 0.7780748663101604,
+    "teste_accuracy": 0.7650816181689141
+  }
+}
