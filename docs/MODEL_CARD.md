@@ -119,6 +119,7 @@ O modelo usa `gender`, `SeniorCitizen`, `Partner` e `Dependents`. Abaixo, o dese
 ## 6. Limitações
 
 - **Dados:** é um dataset público de exemplo, de um único estado dos EUA e de um único instante no tempo. Não há histórico mensal, então não foi possível validar o modelo ao longo do tempo (*out-of-time*). O desempenho em uma operadora brasileira pode ser bem diferente.
+- **Sobreajuste:** o modelo se ajusta bem mais ao treino (AUC 0,946 e F1 0,772) do que ao teste (AUC 0,852 e F1 0,637), então o desempenho no treino não serve de referência. A validação cruzada (F1 0,649) e o teste concordam, o que indica que as métricas da seção 4 são a estimativa adequada para novos clientes dessa mesma população. Os números de treino estão em `models/02_avaliacao_campeao.json`.
 - **Calibração das probabilidades:** as pontuações de risco produzidas pelo modelo não devem ser interpretadas diretamente como probabilidades reais de cancelamento sem uma avaliação de calibração. Sua finalidade é auxiliar na identificação de clientes com maior propensão ao cancelamento.
 - **Precisão do modelo:** o desempenho na identificação de clientes propensos ao cancelamento deve ser avaliado considerando métricas como precisão, recall e F1-score. A escolha do modelo deve levar em conta o equilíbrio entre identificar clientes em risco e evitar classificações incorretas.
 - **Sem causalidade:** o modelo prevê quem tende a cancelar, mas não diz o que faria o cliente ficar. O efeito de uma ação de retenção exige um experimento próprio.
