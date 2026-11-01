@@ -41,7 +41,7 @@
 
 **Colunas descartadas:**
 
-- **Vazamento de informação:** `Churn Label`, `Churn Score`, `CLTV` e `Churn Reason`. Nenhuma estaria disponível ao prever o churn de um cliente ainda ativo.
+- **Vazamento de informação:** `Churn Label` repete o alvo, `Churn Reason` só existe para quem já cancelou e `Churn Score` é uma pontuação de churn já calculada. O `CLTV` foi descartado por precaução, porque não sabemos quando nem como foi calculado.
 - **Constantes:** `Count`, `Country` e `State`.
 - **Identificador e geografia:** `CustomerID`, `City`, `Zip Code`, `Lat Long`, `Latitude` e `Longitude`.
 
@@ -60,11 +60,18 @@ Mesma divisão, mesma validação cruzada, limiar 0,5. A escolha usou as colunas
 |---|---|---|---|---|---|---|---|
 | **Random Forest (campeão)** | **0,649 ± 0,016** | 0,859 ± 0,010 | **0,637** | 0,852 | 0,540 | **0,778** | 0,765 |
 | Rede Neural (MLP) | 0,621 ± 0,031 | 0,859 ± 0,012 | 0,614 | 0,853 | 0,636 | 0,594 | 0,802 |
+| Regressão Logística balanceada | 0,640 ± 0,022 | 0,859 ± 0,013 | 0,618 | 0,849 | 0,512 | 0,778 | 0,744 |
 | Regressão Logística (baseline) | 0,620 ± 0,031 | 0,859 ± 0,013 | 0,606 | 0,849 | 0,645 | 0,572 | 0,803 |
 
 Precision, recall e acurácia são da classe churn / do conjunto de teste.
 
-**Como ler a tabela.** Os três modelos têm AUC praticamente igual, ou seja, ordenam os clientes com qualidade equivalente. A vantagem do Random Forest está no perfil de erro: ele encontra mais cancelamentos (recall 0,78 contra 0,57 do baseline) e, em troca, erra mais ao sinalizar (precision 0,54 contra 0,64). Esse efeito vem em boa parte do `class_weight="balanced"`. O ganho de F1 na CV (+0,029) é menor que dois desvios-padrão entre folds.
+**Como ler a tabela.** Os três modelos têm AUC praticamente igual, ou seja, ordenam os clientes com qualidade equivalente. A vantagem do Random Forest está no perfil de erro: ele encontra mais cancelamentos (recall 0,78 contra 0,57 do baseline) e, em troca, erra mais ao sinalizar (precision 0,54 contra 0,64). Esse efeito vem em boa parte do `class_weight="balanced"`. O ganho de F1 na CV sobre o baseline (+0,029) é menor que dois desvios-padrão entre folds.
+
+**Comparação com os mesmos pesos.** A linha "Regressão Logística balanceada" usa o mesmo `class_weight` do campeão, a mesma divisão e os mesmos folds. Com ela, a vantagem do Random Forest cai para +0,009 de F1 na CV (menos de um desvio-padrão) e +0,020 no teste, onde os dois têm o mesmo recall e o Random Forest gera 29 alarmes falsos a menos (248 contra 277). A escolha do campeão se mantém, mas não há diferença grande entre os modelos.
+
+**Baseline da Etapa 1.** O notebook 01 registra F1 0,642 no teste, com seed 123, 17 features e `class_weight="balanced"`. Esse número vem de outra divisão e não é comparável com os desta tabela. A linha balanceada acima é a comparação válida.
+
+Os números desta seção que não vêm do notebook 02, e os das seções 4.3 e 5, são gerados por `src/evaluate.py` e ficam em `models/02_avaliacao_campeao.json`.
 
 ### 4.2 Matriz de confusão (teste, limiar 0,5)
 

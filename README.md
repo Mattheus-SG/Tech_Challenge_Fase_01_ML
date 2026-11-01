@@ -26,17 +26,22 @@ Um modelo de Machine Learning que classifica clientes de uma operadora de teleco
 |---|---|---|---|---|---|
 | **Random Forest (campeão)** | **0,649 ± 0,016** | **0,637** | 0,852 | 0,540 | **0,778** |
 | Rede Neural (MLP) | 0,621 ± 0,031 | 0,614 | 0,853 | 0,636 | 0,594 |
+| Regressão Logística balanceada | 0,640 ± 0,022 | 0,618 | 0,849 | 0,512 | 0,778 |
 | Regressão Logística (baseline) | 0,620 ± 0,031 | 0,606 | 0,849 | 0,645 | 0,572 |
 
 Métricas de teste em 1.409 clientes (divisão 80/20 estratificada, seed 42). O campeão identifica 78% dos clientes que cancelaram (291 de 374), e 54% dos clientes que ele sinaliza realmente cancelariam.
 
-Os três modelos têm AUC equivalente. A vantagem do Random Forest aparece no recall e está associada ao `class_weight="balanced"`, que o baseline não usa. A análise completa, incluindo as limitações e o desempenho por grupo, está no [Model Card](docs/MODEL_CARD.md).
+Os modelos têm AUC equivalente. Boa parte da vantagem do Random Forest sobre o baseline vem do `class_weight="balanced"`: com os mesmos pesos, a Regressão Logística chega perto (+0,009 de F1 na validação cruzada e +0,020 no teste, com o mesmo recall e 29 alarmes falsos a menos para o Random Forest). A escolha do campeão se mantém, mas a vantagem é pequena.
+
+O baseline do notebook 01 tem F1 0,642 no teste, em outra divisão (seed 123), com 17 features e `class_weight="balanced"`. Esse valor não é comparável com os da tabela acima, em que todos os modelos usam a mesma divisão (seed 42).
+
+A análise completa, incluindo as limitações e o desempenho por grupo, está no [Model Card](docs/MODEL_CARD.md).
 
 ## 3. Etapas do trabalho e onde estão
 
 | Etapa | Entregável | Onde |
 |---|---|---|
-| 1. Entendimento e preparação | ML Canvas, EDA, métricas e baseline de Regressão Logística | `notebooks/01_EDA_Baseline_Churn_Final_Matheus.ipynb` |
+| 1. Entendimento e preparação | ML Canvas, EDA, métricas e baseline de Regressão Logística | `notebooks/01_eda_e_baseline.ipynb` |
 | 2. Modelagem e avaliação | Random Forest e MLP, validação cruzada, tabela comparativa e modelo campeão salvo | `notebooks/02_modelagem_e_avaliacao.ipynb` e `models/` |
 | 3. Engenharia de software e API | Código refatorado em módulos, testes com pytest e API FastAPI | `src/` e `tests/` |
 | 4. Documentação e entrega final | Model Card e README | `docs/MODEL_CARD.md` e `README.md` |
@@ -55,6 +60,7 @@ Os três modelos têm AUC equivalente. A vantagem do Random Forest aparece no re
 │   ├── 02_resultado_treinamento.csv               # tabela comparativa dos modelos
 │   ├── 02_experimentos_gridsearch.csv             # registro das 76 combinações testadas
 │   ├── 02_log_experimentos.txt                    # log dos experimentos
+│   ├── 02_avaliacao_campeao.json                  # métrica de negócio, subgrupos e baseline balanceado
 │   └── baseline_*                                 # baseline da Etapa 1 (modelo, métricas, configuração)
 ├── notebooks/                                     # experimentação (Etapas 1 e 2)
 ├── outputs/                                       # gráficos gerados pelo notebook 01
@@ -66,6 +72,7 @@ Os três modelos têm AUC equivalente. A vantagem do Random Forest aparece no re
 │   ├── preprocessing.py                           # carga e limpeza dos dados
 │   ├── pipeline.py                                # Pipeline do modelo campeão
 │   ├── train.py                                   # treino de ponta a ponta (linha de comando)
+│   ├── evaluate.py                                # números do Model Card (linha de comando)
 │   └── predict.py                                 # inferência
 ├── tests/                                         # testes automatizados (pytest)
 ├── pyproject.toml                                 # dependências e configuração de pytest e ruff
@@ -96,8 +103,8 @@ Depois de instalar, feche e abra o terminal. Outras formas de instalação estã
 **2. Clone o repositório:**
 
 ```bash
-git clone <url-do-repositorio>
-cd <pasta-do-repositorio>
+git clone https://github.com/Mattheus-SG/Tech_Challenge_Fase_01_ML.git
+cd Tech_Challenge_Fase_01_ML
 ```
 
 **3. Instale as dependências:**
@@ -212,7 +219,7 @@ Duas regras de consistência são validadas: `MultipleLines` deve ser `No phone 
 
 | Código | Quando acontece |
 |---|---|
-| `422` | Campo ausente, valor fora dos aceitos ou combinação de serviços impossível |
+| `422` | Campo ausente, valor fora dos aceitos (inclusive infinito) ou combinação de serviços impossível |
 | `503` | O modelo não pôde ser carregado |
 | `500` | Erro inesperado na inferência (a mensagem é genérica, e os detalhes ficam só no log do servidor) |
 
@@ -239,7 +246,7 @@ uv run pytest --cov=src            # com cobertura de código
 uv run ruff check .                # lint (configurado no pyproject.toml)
 ```
 
-Os testes cobrem o pré-processamento, o pipeline, a inferência e a API (`/health`, `/predict` e as respostas `422`, `503` e `500`). Os testes marcados como `slow` retreinam o modelo e conferem se ele reproduz as métricas da Etapa 2.
+Os testes cobrem o pré-processamento, o pipeline, a inferência, a avaliação complementar e a API (`/health`, `/predict` e as respostas `422`, `503` e `500`). Os testes marcados como `slow` retreinam o modelo e conferem se ele reproduz as métricas da Etapa 2.
 
 ## 8. Notebooks
 
@@ -259,12 +266,18 @@ uv run python -m src.train --saida models/modelo_retreinado.joblib
 
 O treino usa o mesmo pipeline, os mesmos hiperparâmetros e as mesmas seeds do modelo oficial, e salva o modelo e os metadados no caminho informado. O `--saida` é obrigatório para não sobrescrever o modelo oficial por engano. Os arquivos `models/modelo_retreinado*` são ignorados pelo Git. Para servi-lo, veja "Usando outro modelo".
 
+Para regenerar a métrica de negócio, a tabela por subgrupo e a comparação com o baseline balanceado (`models/02_avaliacao_campeao.json`), sem treinar nem alterar o modelo oficial:
+
+```bash
+uv run python -m src.evaluate
+```
+
 ## 10. Reprodutibilidade
 
 - **Seeds fixadas:** `SEED = 42` em `src/config.py`, usada na divisão treino/teste, na validação cruzada e nos modelos.
 - **Divisão e validação:** treino/teste de 80/20 estratificado e validação cruzada estratificada com 5 folds.
 - **Dependências travadas:** `uv.lock` registra as versões exatas, e o `pyproject.toml` fixa `numpy`, `pandas` e `scikit-learn`.
-- **Versão do scikit-learn:** o arquivo `.joblib` foi gerado com a 1.9.0 e deve ser carregado com a mesma versão. Como o formato é baseado em pickle, só carregue arquivos de origem confiável.
+- **Versão do scikit-learn:** o modelo campeão foi gerado com a 1.9.0 e deve ser carregado com a mesma versão. O notebook 01 foi executado com a 1.9.1, e `models/baseline_logistica.joblib` não é usado pela API. Como o formato é baseado em pickle, só carregue arquivos de origem confiável.
 
 ## 11. Model Card e limitações
 
