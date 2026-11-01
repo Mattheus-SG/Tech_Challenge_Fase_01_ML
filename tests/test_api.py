@@ -1,5 +1,7 @@
 """Testes da API (src/api) com o TestClient do FastAPI."""
 
+import json
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -133,6 +135,16 @@ def test_predict_rejeita_valor_invalido_com_422(client, cliente, campo, valor):
 
     assert resposta.status_code == 422
     assert campo in resposta.text
+
+
+@pytest.mark.parametrize("campo", ["MonthlyCharges", "TotalCharges"])
+def test_predict_rejeita_valor_infinito_com_422(client, cliente, campo):
+    cliente[campo] = 0.0
+    corpo = json.dumps(cliente).replace(f'"{campo}": 0.0', f'"{campo}": 1e999')
+
+    resposta = client.post("/predict", content=corpo, headers={"Content-Type": "application/json"})
+
+    assert resposta.status_code == 422
 
 
 def test_predict_rejeita_campo_ausente_com_422(client, cliente):
