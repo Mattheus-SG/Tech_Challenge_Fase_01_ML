@@ -3,8 +3,8 @@
 Uso: uv run python -m src.evaluate
 
 Não treina nem altera o modelo oficial. Calcula, no mesmo conjunto de teste da Etapa 2:
-a métrica de negócio, o desempenho por subgrupo e a comparação com um baseline que usa o
-mesmo class_weight="balanced" do campeão. Salva tudo em models/02_avaliacao_campeao.json.
+a métrica de negócio, o desempenho por subgrupo, a diferença entre treino e teste e a
+comparação com um baseline que usa o mesmo class_weight="balanced" do campeão. Salva tudo em models/02_avaliacao_campeao.json.
 """
 
 import json
@@ -14,7 +14,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
@@ -85,6 +91,7 @@ def avaliar(caminho_dados: Path = DATA_PATH, seed: int = SEED) -> dict:
     proba = modelo.predict_proba(X_test)[:, 1]
     pred = (proba >= LIMIAR_DECISAO).astype(int)
     tn, fp, fn, tp = confusion_matrix(y_test, pred).ravel()
+    proba_treino = modelo.predict_proba(X_train)[:, 1]
 
     baseline = criar_baseline_balanceado(seed)
     metricas_baseline = validar_com_cv(baseline, X_train, y_train, seed)
@@ -106,6 +113,12 @@ def avaliar(caminho_dados: Path = DATA_PATH, seed: int = SEED) -> dict:
             "cobertura_cobranca_churn": cobertura_cobranca(X_test["MonthlyCharges"], y_test, pred),
             "clientes_sinalizados": int(pred.sum()),
             "clientes_no_teste": int(len(y_test)),
+        },
+        "treino_vs_teste": {
+            "auc_treino": float(roc_auc_score(y_train, proba_treino)),
+            "auc_teste": float(roc_auc_score(y_test, proba)),
+            "f1_treino": float(f1_score(y_train, proba_treino >= LIMIAR_DECISAO)),
+            "f1_teste": float(f1_score(y_test, pred)),
         },
         "baseline_balanceado": {**metricas_baseline, "alarmes_falsos_teste": fp_baseline},
         "grupos": grupos,
