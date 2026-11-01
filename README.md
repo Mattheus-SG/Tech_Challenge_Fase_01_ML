@@ -14,7 +14,7 @@ Um modelo de Machine Learning que classifica clientes de uma operadora de teleco
 
 **Decisões técnicas principais:**
 
-- **Limpeza:** remoção das colunas que vazam o alvo (`Churn Label`, `Churn Score`, `CLTV`, `Churn Reason`), das constantes e das geográficas. O `TotalCharges` em branco (11 clientes novos, com `tenure` 0) foi preenchido com 0.
+- **Limpeza:** remoção das colunas com risco de vazamento do alvo (`Churn Label`, `Churn Score`, `Churn Reason` e, por precaução, `CLTV`), das constantes e das geográficas. O `TotalCharges` em branco (11 clientes novos, com `tenure` 0) foi preenchido com 0.
 - **Pré-processamento dentro do `Pipeline`:** `StandardScaler` nas numéricas e `OneHotEncoder` nas categóricas, de modo que o treino e a API usam exatamente a mesma transformação.
 - **Modelo final:** Random Forest (200 árvores, profundidade máxima 10, `class_weight="balanced"`), escolhido por `GridSearchCV` com validação cruzada de 5 folds.
 - **Limiar de decisão:** 0,5, definido em `src/config.py`.
@@ -45,6 +45,7 @@ A análise completa, incluindo as limitações e o desempenho por grupo, está n
 | 2. Modelagem e avaliação | Random Forest e MLP, validação cruzada, tabela comparativa e modelo campeão salvo | `notebooks/02_modelagem_e_avaliacao.ipynb` e `models/` |
 | 3. Engenharia de software e API | Código refatorado em módulos, testes com pytest e API FastAPI | `src/` e `tests/` |
 | 4. Documentação e entrega final | Model Card e README | `docs/MODEL_CARD.md` e `README.md` |
+| 4. Documentação e entrega final | Vídeo de apresentação (método STAR) | Entregue à parte, fora do repositório |
 
 ## 4. Estrutura do repositório
 
@@ -244,6 +245,7 @@ uv run pytest                      # todos os testes
 uv run pytest -m "not slow"        # pula os testes que retreinam o modelo completo
 uv run pytest --cov=src            # com cobertura de código
 uv run ruff check .                # lint (configurado no pyproject.toml)
+uv run ruff format --check .        # formatação
 ```
 
 Os testes cobrem o pré-processamento, o pipeline, a inferência, a avaliação complementar e a API (`/health`, `/predict` e as respostas `422`, `503` e `500`). Os testes marcados como `slow` retreinam o modelo e conferem se ele reproduz as métricas da Etapa 2.
@@ -256,9 +258,9 @@ uv run jupyter lab
 
 Abra os notebooks pela pasta `notebooks/`. O notebook 02 usa caminhos relativos (`../data`, `../models`) e depende de ser aberto a partir dela.
 
-> **Cuidado:** executar os notebooks por inteiro regrava arquivos. O notebook 01 sobrescreve `outputs/*.png` e os arquivos `models/baseline_*`, e o notebook 02 sobrescreve os arquivos `models/02_*`, inclusive o modelo servido pela API. Como um Random Forest retreinado em outro ambiente é equivalente, mas não idêntico, as métricas podem mudar levemente. Se quiser apenas retreinar, prefira o comando da próxima seção.
+> **Cuidado:** executar os notebooks por inteiro regrava arquivos. O notebook 01 sobrescreve `outputs/*.png` e os arquivos `models/baseline_*`, e o notebook 02 sobrescreve os arquivos `models/02_*`, inclusive o modelo servido pela API. Como um Random Forest retreinado em outro ambiente é equivalente, mas não idêntico, as métricas podem mudar levemente. O arquivo `models/02_avaliacao_campeao.json` não é regravado pelos notebooks: depois de executar o notebook 02, rode `uv run python -m src.evaluate`, ou o teste que confere esse arquivo vai falhar. Se quiser apenas retreinar, prefira o comando da próxima seção.
 
-## 9. Retreinar o modelo
+## 9. Retreinar e reavaliar o modelo
 
 ```bash
 uv run python -m src.train --saida models/modelo_retreinado.joblib
@@ -266,7 +268,7 @@ uv run python -m src.train --saida models/modelo_retreinado.joblib
 
 O treino usa o mesmo pipeline, os mesmos hiperparâmetros e as mesmas seeds do modelo oficial, e salva o modelo e os metadados no caminho informado. O `--saida` é obrigatório para não sobrescrever o modelo oficial por engano. Os arquivos `models/modelo_retreinado*` são ignorados pelo Git. Para servi-lo, veja "Usando outro modelo".
 
-Para regenerar a métrica de negócio, a tabela por subgrupo e a comparação com o baseline balanceado (`models/02_avaliacao_campeao.json`), sem treinar nem alterar o modelo oficial:
+Para regenerar a métrica de negócio, a tabela por subgrupo, a diferença entre treino e teste e a comparação com o baseline balanceado (`models/02_avaliacao_campeao.json`), sem alterar o modelo oficial:
 
 ```bash
 uv run python -m src.evaluate
@@ -274,7 +276,7 @@ uv run python -m src.evaluate
 
 ## 10. Reprodutibilidade
 
-- **Seeds fixadas:** `SEED = 42` em `src/config.py`, usada na divisão treino/teste, na validação cruzada e nos modelos.
+- **Seeds fixadas:** `SEED = 42` em `src/config.py`, usada na divisão treino/teste, na validação cruzada e nos modelos. O notebook 01 usa a seed 123, definida nele mesmo, e seu resultado não é comparável com os da seção 2.
 - **Divisão e validação:** treino/teste de 80/20 estratificado e validação cruzada estratificada com 5 folds.
 - **Dependências travadas:** `uv.lock` registra as versões exatas, e o `pyproject.toml` fixa `numpy`, `pandas` e `scikit-learn`.
 - **Versão do scikit-learn:** o modelo campeão foi gerado com a 1.9.0 e deve ser carregado com a mesma versão. O notebook 01 foi executado com a 1.9.1, e `models/baseline_logistica.joblib` não é usado pela API. Como o formato é baseado em pickle, só carregue arquivos de origem confiável.
@@ -286,6 +288,8 @@ O [Model Card](docs/MODEL_CARD.md) documenta a avaliação técnica detalhada, m
 - **Propensão:** O modelo fornece estimativas de propensão ao cancelamento para ordenação e priorização de contato, não garantindo que o cliente efetivamente cancelará o serviço.
 - **Uso ético e humano:** Não deve ser utilizado como fundamento exclusivo para decisões punitivas, cancelamento preventivo ou aplicação automática de medidas prejudiciais aos clientes sem supervisão humana.
 - **Qualidade e representatividade:** O desempenho depende da manutenção da qualidade e do formato dos dados de entrada, bem como do monitoramento contínuo de distribuições.
+- **Vantagem do campeão:** é pequena em relação à Regressão Logística balanceada, e todos os modelos têm AUC equivalente.
+- **Sobreajuste:** o modelo vai bem melhor no treino (F1 0,772) do que no teste (F1 0,637). As métricas de referência são as da validação cruzada e do teste, que concordam entre si.
 - **Falsos alarmes e subgrupos:** Quase metade dos clientes sinalizados não cancelaria (46% de alarmes falsos no limiar de 0,5). Entre os clientes que permaneceram, 46% dos com 65 anos ou mais são sinalizados indevidamente, contra 21% dos demais, o que concentra as abordagens desnecessárias nesse grupo.
 
 ## 12. Equipe
