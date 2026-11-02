@@ -240,7 +240,16 @@ MODEL_PATH=models/modelo_retreinado.joblib uv run uvicorn src.api.main:app --rel
 $env:MODEL_PATH = "models/modelo_retreinado.joblib"; uv run uvicorn src.api.main:app --reload
 ```
 
-### Rodando com Docker
+### Opções de deploy
+
+Comece pelo deploy local. O deploy no Google Cloud Run serve apenas como demonstração para testes.
+
+| Opção | Quando usar | Requisitos |
+|---|---|---|
+| **1. Local com Docker (recomendada)** | Para rodar e avaliar a API na sua máquina | Docker |
+| **2. Google Cloud Run (demonstração)** | Para testar a API por um endereço público | Projeto do Google Cloud com cobrança ativa e CLI `gcloud` |
+
+### Opção 1: deploy local com Docker
 
 A imagem contém só a API, o modelo campeão e as dependências de produção, nas versões do `uv.lock`, e roda sem privilégios de root.
 
@@ -249,25 +258,21 @@ docker build -t churn-api .
 docker run --rm -p 8000:8000 churn-api
 ```
 
-A documentação interativa fica em **http://127.0.0.1:8000/docs**, como na execução local.
+A documentação interativa fica em **http://127.0.0.1:8000/docs**, como na execução com `uv`. A imagem escuta na porta da variável `PORT`, quando definida, ou na 8000.
 
-### Implantando na nuvem (opcional)
+### Opção 2: demonstração no Google Cloud Run
 
-A API está publicada no Google Cloud Run: **https://churn-api-976469610767.southamerica-east1.run.app/docs**. O serviço pode ser desligado depois da avaliação do Tech Challenge.
+A demonstração para testes está em **https://churn-api-976469610767.southamerica-east1.run.app/docs**. Ela não é um ambiente de produção e pode ser desligada depois da avaliação do Tech Challenge.
 
-A imagem funciona em serviços de containers como Google Cloud Run, Amazon ECS e Azure Container Apps. Ela escuta na porta da variável `PORT`, quando definida, ou na 8000. Com 512 MB de memória, ela atendeu 200 chamadas seguidas sem erros e usou cerca de 170 MB.
-
-Para repetir a implantação no Google Cloud Run, é preciso ter Docker, um projeto do Google Cloud com cobrança ativa e a CLI `gcloud` autenticada, com esse projeto selecionado. Troque `SEU_PROJETO` pelo ID do projeto. O primeiro comando só é necessário na primeira implantação:
+Para publicar a sua, autentique a CLI `gcloud`, selecione o projeto e rode na raiz do repositório. O Cloud Build constrói a imagem na nuvem a partir do `Dockerfile`, então não é preciso ter Docker na máquina:
 
 ```bash
-gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=southamerica-east1
-gcloud auth configure-docker southamerica-east1-docker.pkg.dev
-docker build --platform linux/amd64 -t southamerica-east1-docker.pkg.dev/SEU_PROJETO/cloud-run-source-deploy/churn-api .
-docker push southamerica-east1-docker.pkg.dev/SEU_PROJETO/cloud-run-source-deploy/churn-api
-gcloud run deploy churn-api --image southamerica-east1-docker.pkg.dev/SEU_PROJETO/cloud-run-source-deploy/churn-api --region southamerica-east1 --memory 512Mi --max-instances 1 --allow-unauthenticated
+gcloud run deploy churn-api --source . --region southamerica-east1 --memory 512Mi --max-instances 1 --allow-unauthenticated
 ```
 
-Ao terminar, o último comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. A API não tem autenticação: com `--allow-unauthenticated`, qualquer pessoa com o endereço pode chamá-la, então use essa opção apenas em demonstrações, com dados fictícios. O `--max-instances 1` limita o custo se o serviço receber muitas chamadas.
+Ao terminar, o comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. Na primeira execução em um projeto, o comando pode pedir para ativar APIs do Google Cloud. Se ele falhar com erro de permissão logo depois disso, aguarde alguns minutos e repita.
+
+A API não tem autenticação: com `--allow-unauthenticated`, qualquer pessoa com o endereço pode chamá-la, então use apenas dados fictícios. O `--max-instances 1` limita o custo se o serviço receber muitas chamadas. Com 512 MB de memória, a API atendeu 200 chamadas seguidas sem erros e usou cerca de 170 MB.
 
 ## 7. Testes e qualidade de código
 
