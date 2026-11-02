@@ -25,7 +25,15 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
-from src.config import AVALIACAO_PATH, DATA_PATH, LIMIAR_DECISAO, SEED, TEST_SIZE
+from src.config import (
+    AVALIACAO_PATH,
+    DATA_PATH,
+    LIMIAR_DECISAO,
+    MODEL_PATH,
+    SEED,
+    TEST_SIZE,
+    caminho_metadata,
+)
 from src.pipeline import criar_preprocessor
 from src.predict import carregar_modelo
 from src.preprocessing import carregar_dados, preparar_dados, separar_features_alvo
@@ -107,7 +115,10 @@ def avaliar(caminho_dados: Path = DATA_PATH, seed: int = SEED) -> dict:
             y_test.to_numpy()[mascara], pred[mascara], proba[mascara]
         )
 
+    metadata = json.loads(caminho_metadata(MODEL_PATH).read_text(encoding="utf-8"))
+
     return {
+        "versao_modelo": metadata["criado_em"],
         "limiar_decisao": LIMIAR_DECISAO,
         "matriz_confusao_teste": {"tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp)},
         "metrica_negocio": {
@@ -126,11 +137,16 @@ def avaliar(caminho_dados: Path = DATA_PATH, seed: int = SEED) -> dict:
     }
 
 
-def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+def salvar_avaliacao() -> None:
+    """Avalia o modelo oficial e grava o resultado em models/02_avaliacao_campeao.json."""
     AVALIACAO_PATH.write_text(
         json.dumps(avaliar(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
+
+
+def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    salvar_avaliacao()
     logger.info("Avaliação salva em %s", AVALIACAO_PATH)
 
 
