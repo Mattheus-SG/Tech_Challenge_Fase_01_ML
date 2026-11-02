@@ -247,7 +247,7 @@ Comece pelo deploy local. O deploy no Google Cloud Run serve apenas como demonst
 | Opção | Quando usar | Requisitos |
 |---|---|---|
 | **1. Local com Docker (recomendada)** | Para rodar e avaliar a API na sua máquina | Docker |
-| **2. Google Cloud Run (demonstração)** | Para testar a API por um endereço público | Projeto do Google Cloud com cobrança ativa e CLI `gcloud` |
+| **2. Google Cloud Run (demonstração)** | Para testar a API por um endereço público | Projeto do Google Cloud com cobrança ativa, CLI `gcloud` e as APIs configuradas |
 
 ### Opção 1: deploy local com Docker
 
@@ -264,13 +264,30 @@ A documentação interativa fica em **http://127.0.0.1:8000/docs**, como na exec
 
 A demonstração para testes está em **https://churn-api-976469610767.southamerica-east1.run.app/docs**. Ela não é um ambiente de produção e pode ser desligada depois da avaliação do Tech Challenge.
 
-Para publicar a sua, autentique a CLI `gcloud`, selecione o projeto e rode na raiz do repositório. O Cloud Build constrói a imagem na nuvem a partir do `Dockerfile`, então não é preciso ter Docker na máquina:
+Para publicar a sua, primeiro configure o projeto. Estes comandos só são necessários uma vez por projeto. Troque `SEU_PROJETO` pelo ID do projeto, que precisa ter cobrança ativa:
+
+```bash
+gcloud auth login
+gcloud config set project SEU_PROJETO
+gcloud billing projects describe SEU_PROJETO
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=southamerica-east1
+```
+
+| Comando | Para que serve |
+|---|---|
+| `gcloud auth login` e `config set project` | Autenticam a CLI e selecionam o projeto |
+| `gcloud billing projects describe` | Confirma a cobrança, que deve aparecer como `billingEnabled: true` |
+| `gcloud services enable` | Ativa o Cloud Run, o Cloud Build e o Artifact Registry |
+| `gcloud artifacts repositories create` | Cria o repositório das imagens. Se ele já existir, o comando retorna `ALREADY_EXISTS`, e basta seguir |
+
+Depois, rode o deploy na raiz do repositório. O Cloud Build constrói a imagem na nuvem a partir do `Dockerfile` e a guarda no Artifact Registry, então não é preciso ter Docker na máquina:
 
 ```bash
 gcloud run deploy churn-api --source . --region southamerica-east1 --memory 512Mi --max-instances 1 --allow-unauthenticated
 ```
 
-Ao terminar, o comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. Na primeira execução em um projeto, o comando pode pedir para ativar APIs do Google Cloud. Se ele falhar com erro de permissão logo depois disso, aguarde alguns minutos e repita.
+Ao terminar, o comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. Se ele falhar com erro de permissão logo depois de ativar as APIs, aguarde alguns minutos e repita.
 
 A API não tem autenticação: com `--allow-unauthenticated`, qualquer pessoa com o endereço pode chamá-la, então use apenas dados fictícios. O `--max-instances 1` limita o custo se o serviço receber muitas chamadas. Com 512 MB de memória, a API atendeu 200 chamadas seguidas sem erros e usou cerca de 170 MB.
 
