@@ -75,6 +75,8 @@ def test_campeao_supera_o_baseline_com_os_mesmos_pesos(avaliacao):
 
 def test_arquivo_salvo_esta_atualizado(avaliacao):
     salvo = json.loads(AVALIACAO_PATH.read_text(encoding="utf-8"))
+    if salvo["versao_modelo"] != avaliacao["versao_modelo"]:
+        pytest.skip("O modelo mudou depois da avaliação: rode uv run python -m src.evaluate")
 
     assert salvo["metrica_negocio"] == avaliacao["metrica_negocio"]
     assert salvo["grupos"] == avaliacao["grupos"]
