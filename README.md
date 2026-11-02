@@ -258,7 +258,7 @@ uv run jupyter lab
 
 Abra os notebooks pela pasta `notebooks/`. O notebook 02 usa caminhos relativos (`../data`, `../models`) e depende de ser aberto a partir dela.
 
-> **Cuidado:** executar os notebooks por inteiro regrava arquivos. O notebook 01 sobrescreve `outputs/*.png` e os arquivos `models/baseline_*`, e o notebook 02 sobrescreve os arquivos `models/02_*`, inclusive o modelo servido pela API. Como um Random Forest retreinado em outro ambiente é equivalente, mas não idêntico, as métricas podem mudar levemente. O arquivo `models/02_avaliacao_campeao.json` não é regravado pelos notebooks: depois de executar o notebook 02, rode `uv run python -m src.evaluate`, ou o teste que confere esse arquivo vai falhar. Se quiser apenas retreinar, prefira o comando da próxima seção.
+> **Cuidado:** executar os notebooks por inteiro regrava arquivos. O notebook 01 sobrescreve `outputs/*.png` e os arquivos `models/baseline_*`, e o notebook 02 sobrescreve os arquivos `models/02_*`, inclusive o modelo servido pela API. Como um Random Forest retreinado em outro ambiente é equivalente, mas não idêntico, as métricas podem mudar levemente. O notebook 02 também atualiza `models/02_avaliacao_campeao.json`. Se o modelo for trocado de outra forma, rode `uv run python -m src.evaluate`: até lá, o teste que confere esse arquivo é pulado, com uma mensagem explicando o motivo. Se quiser apenas retreinar, prefira o comando da próxima seção.
 
 ## 9. Retreinar e reavaliar o modelo
 
