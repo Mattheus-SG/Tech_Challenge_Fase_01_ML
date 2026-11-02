@@ -253,17 +253,21 @@ A documentação interativa fica em **http://127.0.0.1:8000/docs**, como na exec
 
 ### Implantando na nuvem (opcional)
 
+A API está publicada no Google Cloud Run: **https://churn-api-976469610767.southamerica-east1.run.app/docs**. O serviço pode ser desligado depois da avaliação do Tech Challenge.
+
 A imagem funciona em serviços de containers como Google Cloud Run, Amazon ECS e Azure Container Apps. Ela escuta na porta da variável `PORT`, quando definida, ou na 8000. Com 512 MB de memória, ela atendeu 200 chamadas seguidas sem erros e usou cerca de 170 MB.
 
-Exemplo com o Google Cloud Run, que constrói a imagem a partir do `Dockerfile`. É preciso ter um projeto do Google Cloud com cobrança ativa e a CLI `gcloud` autenticada:
+Para repetir a implantação no Google Cloud Run, é preciso ter Docker, um projeto do Google Cloud com cobrança ativa e a CLI `gcloud` autenticada, com esse projeto selecionado. Troque `SEU_PROJETO` pelo ID do projeto. O primeiro comando só é necessário na primeira implantação:
 
 ```bash
-gcloud run deploy churn-api --source . --region southamerica-east1 --memory 512Mi --allow-unauthenticated
+gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=southamerica-east1
+gcloud auth configure-docker southamerica-east1-docker.pkg.dev
+docker build --platform linux/amd64 -t southamerica-east1-docker.pkg.dev/SEU_PROJETO/cloud-run-source-deploy/churn-api .
+docker push southamerica-east1-docker.pkg.dev/SEU_PROJETO/cloud-run-source-deploy/churn-api
+gcloud run deploy churn-api --image southamerica-east1-docker.pkg.dev/SEU_PROJETO/cloud-run-source-deploy/churn-api --region southamerica-east1 --memory 512Mi --max-instances 1 --allow-unauthenticated
 ```
 
-Ao terminar, o comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. A API não tem autenticação: com `--allow-unauthenticated`, qualquer pessoa com o endereço pode chamá-la, então use essa opção apenas em demonstrações, com dados fictícios.
-
-Se construir a imagem em um Mac com Apple Silicon para enviá-la a um registro, acrescente `--platform linux/amd64` ao `docker build`, a arquitetura usada pela maioria das nuvens.
+Ao terminar, o último comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. A API não tem autenticação: com `--allow-unauthenticated`, qualquer pessoa com o endereço pode chamá-la, então use essa opção apenas em demonstrações, com dados fictícios. O `--max-instances 1` limita o custo se o serviço receber muitas chamadas.
 
 ## 7. Testes e qualidade de código
 
