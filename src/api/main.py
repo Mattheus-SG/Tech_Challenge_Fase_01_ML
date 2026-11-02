@@ -119,7 +119,7 @@ def health(response: Response) -> Saude:
     try:
         modelo = carregar_modelo_servido()
     except Exception:
-        # 503 para que orquestradores (Render, Kubernetes) tirem a instância do ar
+        # 503 para que orquestradores (Docker, Kubernetes) tirem a instância do ar
         response.status_code = 503
         return Saude(
             status="degraded",
