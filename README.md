@@ -76,6 +76,8 @@ A análise completa, incluindo as limitações e o desempenho por grupo, está n
 │   ├── evaluate.py                                # números do Model Card (linha de comando)
 │   └── predict.py                                 # inferência
 ├── tests/                                         # testes automatizados (pytest)
+├── Dockerfile                                     # imagem da API para rodar em container
+├── .dockerignore                                  # limita a imagem ao que a API precisa
 ├── pyproject.toml                                 # dependências e configuração de pytest e ruff
 ├── uv.lock                                        # versões exatas das dependências
 └── .python-version                                # versão do Python (3.14)
@@ -237,6 +239,31 @@ MODEL_PATH=models/modelo_retreinado.joblib uv run uvicorn src.api.main:app --rel
 # Windows (PowerShell)
 $env:MODEL_PATH = "models/modelo_retreinado.joblib"; uv run uvicorn src.api.main:app --reload
 ```
+
+### Rodando com Docker
+
+A imagem contém só a API, o modelo campeão e as dependências de produção, nas versões do `uv.lock`, e roda sem privilégios de root.
+
+```bash
+docker build -t churn-api .
+docker run --rm -p 8000:8000 churn-api
+```
+
+A documentação interativa fica em **http://127.0.0.1:8000/docs**, como na execução local.
+
+### Implantando na nuvem (opcional)
+
+A imagem funciona em serviços de containers como Google Cloud Run, Amazon ECS e Azure Container Apps. Ela escuta na porta da variável `PORT`, quando definida, ou na 8000. Com 512 MB de memória, ela atendeu 200 chamadas seguidas sem erros e usou cerca de 170 MB.
+
+Exemplo com o Google Cloud Run, que constrói a imagem a partir do `Dockerfile`. É preciso ter um projeto do Google Cloud com cobrança ativa e a CLI `gcloud` autenticada:
+
+```bash
+gcloud run deploy churn-api --source . --region southamerica-east1 --memory 512Mi --allow-unauthenticated
+```
+
+Ao terminar, o comando mostra o endereço público, e o Swagger fica em `<endereço>/docs`. A API não tem autenticação: com `--allow-unauthenticated`, qualquer pessoa com o endereço pode chamá-la, então use essa opção apenas em demonstrações, com dados fictícios.
+
+Se construir a imagem em um Mac com Apple Silicon para enviá-la a um registro, acrescente `--platform linux/amd64` ao `docker build`, a arquitetura usada pela maioria das nuvens.
 
 ## 7. Testes e qualidade de código
 

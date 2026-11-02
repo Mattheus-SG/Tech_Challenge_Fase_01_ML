@@ -1,0 +1,9 @@
+# Ignora tudo e libera só o que a API precisa para rodar
+*
+!pyproject.toml
+!uv.lock
+!.python-version
+!src/
+!models/02_modelo_campeao.joblib
+!models/02_modelo_campeao_metadata.json
+**/__pycache__/
